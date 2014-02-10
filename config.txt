@@ -1,0 +1,23 @@
+/*
+Edit the following table so that the left column contains the 
+Google Analytics ID and the right column contains a friendly name
+for each of the sites you want to get data for.
+You can find the ID by going to the Google Analytic connector in QVSource and
+looking at the WebProfiles table (Id column).
+*/
+GoogleAnalyticsProfiles:
+LOAD * INLINE [
+ga_id, WebsiteProfile
+01234567, yourwebsite1
+34567890, yourwebsite2
+];
+
+
+/*
+This is the date to get the data from and is used the first time the 
+application is reloaded (specified as the number of days back from today).
+*/
+let vTemp = Date(timestamp(now(1)) - 30);
+let vDateToGetDataFromOnFirstReload= date(vTemp, 'YYYY-MM-DD');
+
+let vAppId = 'myApp';

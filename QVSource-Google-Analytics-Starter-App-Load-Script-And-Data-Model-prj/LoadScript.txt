@@ -1,0 +1,511 @@
+﻿///$tab Notes
+/*
+Change Log
+----------
+1.0.0.5 - 04/12/13
+------------------
+* Added badge.
+
+1.0.0.4 - 10/09/13
+------------------
+* Fixed issue with referencing the wrong config file.
+
+1.0.0.3 - 12/07/13
+------------------
+* Renamed config file config.txt.
+* Moved to GitHub.
+
+1.0.0.2 - 24/06/13
+----------------
+* Ooops - forgot to actually include the last fix (Fixed bug: let profileChanged = 'ga:'&$(profile); => let profileChanged = 'ga:$(profile)';)
+
+1.0.0.1 - 24/06/13
+------------------
+* Fixed bug: let profileChanged = 'ga:'&$(profile); => let profileChanged = 'ga:$(profile)';
+* Improved config file so start date always goes back a fixed number of days from today.
+
+1.0.0.0 - 09/08/12
+------------------
+* First version of Google Analytics Application
+
+TODO
+----
+* Improve the colour scheme so that its consistant throughout the application
+* Incremental loads for the just the previous day to the qvds
+* make the start date in the config file the actual day to start from - currently it needs to be the one before.
+*/
+///$tab Main
+SET ThousandSep=',';
+SET DecimalSep='.';
+SET MoneyThousandSep=',';
+SET MoneyDecimalSep='.';
+SET MoneyFormat='£#,##0.00;-£#,##0.00';
+SET TimeFormat='hh:mm:ss';
+SET DateFormat='DD/MM/YYYY';
+SET TimestampFormat='DD/MM/YYYY hh:mm:ss[.fff]';
+SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec';
+SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
+
+//Brings in the Config File for the application. The config file must reside next to this application;
+$(include=config.txt);
+
+///$tab Settings
+set QVSourceURL = ;
+
+PrebuildFeeds:
+LOAD * INLINE [
+ReportId    , PrebuildFeeds						, QVTableName					, QueryString
+1			, Main								, Main							, 'dimensions=ga:visitorType,ga:source,ga:keyword,ga:browser,ga:isMobile,ga:language,ga:city&metrics=ga:visitors,ga:percentNewVisits,ga:visits,ga:organicSearches,ga:pageviewsPerVisit,ga:pageviews,ga:newVisits,ga:timeOnSite,ga:bounces,ga:entrances'
+2			, Main								, Main							, 'dimensions=ga:visitorType,ga:source,ga:hour,ga:browser,ga:isMobile,ga:language,ga:city&metrics=ga:visitors,ga:percentNewVisits,ga:visits,ga:organicSearches,ga:pageviewsPerVisit,ga:pageviews,ga:newVisits,ga:timeOnSite,ga:bounces,ga:entrances'
+3			, Main								, Main							, 'dimensions=ga:visitorType,ga:source,ga:hour,ga:keyword,ga:isMobile,ga:medium,ga:city&metrics=ga:visitors,ga:percentNewVisits,ga:visits,ga:organicSearches,ga:pageviewsPerVisit,ga:pageviews,ga:newVisits,ga:timeOnSite,ga:bounces,ga:entrances'
+51			, Visitors and Pageviews Over Time	, VisitorsAndPageviewsOverTime	, 'metrics=ga:visits,ga:pageviews'
+52			, Mobile Traffic					, MobileTraffic					, 'dimensions=ga:browser,ga:operatingSystem,ga:source&metrics=ga:visits,ga:pageviews,ga:timeOnSite&segment=gaid::-11'
+3			, Revenue Generating Campaigns		, RevenueGeneratingCampaigns	, 'dimensions=ga:source,ga:medium&metrics=ga:visits,ga:pageviews,ga:timeOnSite,ga:bounces&segment=dynamic::ga:transactions>1'
+4			, New vs Returning Visits			, NewVSReturningVisits			, 'dimensions=ga:visitorType&metrics=ga:visits'
+5			, Visits by Country					, VisitsByCountry				, 'dimensions=ga:country&metrics=ga:visits&sort=-ga:visits'
+6			, Browser and Operating System		, BrowserAndOperatingSystem		, 'dimensions=ga:operatingSystem,ga:operatingSystemVersion,ga:browser,ga:browserVersion&metrics=ga:visits'
+7			, Time on Site						, TimeOnSite					, 'metrics=ga:visits,ga:timeOnSite'
+8			, All Trafiic Sources - Usage		, AllTrafiicSources_Usage		, 'dimensions=ga:source,ga:medium&metrics=ga:visits,ga:pageviews,ga:timeOnSite,ga:exits&sort=-ga:visits'
+9			, All Trafiic Sources - Goals		, AllTrafiicSources_Goals		, 'dimensions=ga:source,ga:medium&metrics=ga:visits,ga:goal1Starts,ga:goal1Completions,ga:goal1Value,ga:goalStartsAll,ga:goalCompletionsAll,ga:goalValueAll&sort=-ga:goalCompletionsAll'
+10			, All Trafiic Sources - E-Commerce  , AllTrafiicSources_E_Commerce  , 'dimensions=ga:source,ga:medium&metrics=ga:visits,ga:transactionRevenue,ga:transactions,ga:uniquePurchases&sort=-ga:visits'
+11			, Referring Sites					, ReferringSites				, 'dimensions=ga:source&metrics=ga:pageviews,ga:timeOnSite,ga:exits&filters=ga:medium==referral&sort=-ga:pageviews'
+12			, Search Engines					, SearchEngines					, 'dimensions=ga:source&metrics=ga:pageviews,ga:timeOnSite,ga:exits&filters=ga:medium==cpa,ga:medium==cpc,ga:medium==cpm,ga:medium==cpp,ga:medium==cpv,ga:medium==organic,ga:medium==ppc&sort=-ga:pageviews'
+13			, Search Engines - Organic Search	, SearchEngines_OrganicSearch	, 'dimensions=ga:source&metrics=ga:pageviews,ga:timeOnSite,ga:exits&filters=ga:medium==organic&sort=-ga:pageviews' 
+14			, Search Engines - Paid Search		, SearchEngines_Paid Search		, 'dimensions=ga:source&metrics=ga:pageviews,ga:timeOnSite,ga:exits&filters=ga:medium==cpa,ga:medium==cpc,ga:medium==cpm,ga:medium==cpp,ga:medium==cpv,ga:medium==ppc&sort=-ga:pageviews'
+15			, Keywords							, Keywords						, 'dimensions=ga:keyword&metrics=ga:visits&sort=-ga:visits'
+16			, Top Content						, TopContent					, 'dimensions=ga:pagePath&metrics=ga:pageviews,ga:uniquePageviews,ga:timeOnPage,ga:bounces,ga:entrances,ga:exits&sort=-ga:pageviews'
+17			, Top Landing Pages					, TopLanding Pages				, 'dimensions=ga:landingPagePath&metrics=ga:entrances,ga:bounces&sort=-ga:entrances'
+18			, Top Exit Pages					, TopExit Pages					, 'dimensions=ga:exitPagePath&metrics=ga:exits,ga:pageviews&sort=-ga:exits'
+19			, Site Search - Search Terms		, SiteSearch_SearchTerms		, 'dimensions=ga:searchKeyword&metrics=ga:searchUniques&sort=-ga:searchUniques'
+20			, Page/Visit						, Page_Visit					, 'dimensions=ga:pageDepth&metrics=ga:pageviewsPerVisit'
+21			, Unique Visitors					, UniqueVisitors				, 'metrics=ga:visitors'
+22			, Location							, Location						, 'dimensions=ga:language,ga:city,ga:country,ga:browser,ga:isMobile&metrics=ga:visitors,ga:visits,ga:avgTimeOnSite,ga:percentNewVisits,ga:visitBounceRate,ga:organicSearches'
+];
+
+let vtemp = Date(timestamp(now(1)) - 1);
+
+	DatesToLoad:
+	Load 
+		date((Date(IterNo() + Date('$(vDateToGetDataFromOnFirstReload)'))),'YYYY-MM-DD') AS DatesToLoad
+	AutoGenerate 1 
+	While Date(IterNo() + Date('$(vDateToGetDataFromOnFirstReload)')) <= '$(vtemp)';
+
+
+VisitDurations:
+Load * InLine [
+VisitDurationStart, VisitDurationEnd, VisitDurationDisplay
+0.0				  , 10.00			, '0-10 seconds'
+10.01			  , 20.00		    , '10-20 seconds'
+20.01			  , 30.00		    , '20-30 seconds'
+30.01			  , 999999999	  	, '> 30 seconds'
+];
+///$tab Get Data
+GoogleAnalyticsConnector_CanAuthenticate:
+LOAD
+	authenticated as CanAuthenticate_authenticated,
+	error_message as CanAuthenticate_error_message
+FROM
+[http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=CanAuthenticate&appID=$(vAppId)]
+(qvx);
+
+let canAuthenticate = peek('CanAuthenticate_authenticated', 0, 'GoogleAnalyticsConnector_CanAuthenticate');
+
+if(canAuthenticate = 'false') then
+	let vNotAuthenticate = 1;
+	exit script;
+else
+	let vNotAuthenticate = 0;
+endif
+
+	//not sure if this is needed as will always run
+	GoogleAnalyticsConnectorV3_Accounts:
+	LOAD
+		id as Accounts_id,
+		kind as Accounts_kind,
+		selfLink as Accounts_selfLink,
+		name as Accounts_name,
+		created as Accounts_created,
+		updated as Accounts_updated
+	FROM
+	[http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=Accounts&appID=$(vAppId)]
+	(qvx);
+	
+	GoogleAnalyticsConnectorV3_Segments:
+	LOAD
+	    id as Segments_id,
+	    segmentId as Segments_segmentId,
+	    name as Segments_name,
+	    definition as Segments_definition
+	FROM
+	[http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=Segments&appID=$(vAppId)]
+	(qvx); 
+	
+	GoogleAnalyticsConnectorV3_WebProfiles:
+	LOAD
+	    id as WebProfiles_id,
+	    accountId as Accounts_id,
+	    webPropertyId as WebProfiles_webPropertyId,
+	    internalWebPropertyId as internalWebPropertyId,
+	    name as WebProfiles_name,
+	    currency as WebProfiles_currency,
+	    timezone as WebProfiles_timezone,
+	    created as WebProfiles_created,
+	    updated as WebProfiles_updated,
+	    defaultPage as WebProfiles_defaultPage
+	FROM
+	[http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=WebProfiles&appID=$(vAppId)]
+	(qvx); 
+	
+	GoogleAnalyticsConnectorV3_WebProperties:
+	LOAD
+		id as WebProperties_id,
+		accountId as WebProperties_accountId,
+		internalWebPropertyId as internalWebPropertyId,
+		name as WebProperties_name,
+		websiteUrl as WebProperties_websiteUrl,
+		created as WebProperties_created,
+		updated as WebProperties_updated
+	FROM
+	[http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=WebProperties&appID=$(vAppId)]
+	(qvx);
+
+LET noRows = NoOfRows('GoogleAnalyticsProfiles');
+
+//loop through each profile in the config file	
+for j=0 to $(noRows)-1
+
+	let profile = peek('ga_id',$(j),'GoogleAnalyticsProfiles');
+	
+		let profileChanged = 'ga:$(profile)';
+		
+		let t = FieldValueCount('DatesToLoad');
+		for i = 1 to  $(t)
+			let startDate =  FieldValue('DatesToLoad', $(i));
+			set tableName =  QVTableName;
+			let url = 'https://www.googleapis.com/analytics/v3/data/ga?ids=' & '$(profileChanged)' & '&' & FieldValue('QueryString',1) & '&start-date=$(startDate)&end-date=$(startDate)&max-results=10000';
+			let url1 = 'https://www.googleapis.com/analytics/v3/data/ga?ids=' & '$(profileChanged)' & '&' & FieldValue('QueryString',2) & '&start-date=$(startDate)&end-date=$(startDate)&max-results=10000';		
+			let url2 = 'https://www.googleapis.com/analytics/v3/data/ga?ids=' & '$(profileChanged)' & '&' & FieldValue('QueryString',3) & '&start-date=$(startDate)&end-date=$(startDate)&max-results=10000';				
+			let locationsUrl = 'https://www.googleapis.com/analytics/v3/data/ga?ids=' & '$(profileChanged)' &'&dimensions=ga:continent,ga:subContinent,ga:country,ga:region,ga:city,ga:latitude,ga:longitude&metrics=ga:visitors&start-date=$(startDate)&end-date=$(startDate)&max-results=10000';
+			let urlEncoded = URLEncode('$(url)');
+			let urlEncoded1 = URLEncode('$(url1)');		
+			let urlEncoded2 = URLEncode('$(url2)');		
+			let locationUrlEncoded = URLEncode('$(locationsUrl)');		
+		
+			$(tableName):
+			LOAD
+				*,
+				date('$(startDate)','YYYY-MM-DD') as ForDate,
+				replace('$(profileChanged)','ga:','') 	  as ga_id
+			FROM [http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=DataFromQueryURI&appID=$(vAppId)&feed=$(urlEncoded)](qvx);
+			
+			Concatenate
+			
+			LOAD
+				 dim_visitorType, 
+			     dim_source, 
+			     //dim_keyword, 
+			     dim_browser, 
+			     dim_isMobile, 
+			     dim_language, 
+			     dim_city					as City, 
+			     dim_hour,
+			     metric_visitors				as metric_visitors_hourly, 
+			     metric_percentNewVisits		as metric_percentNewVisits_hourly, 
+			     metric_visits					as metric_visits_hourly, 
+			     metric_organicSearches			as metric_organicSearches_hourly, 
+			     metric_pageviewsPerVisit		as metric_pageviewsPerVisit_hourly, 
+			     metric_pageviews				as metric_pageviews_hourly, 
+			     metric_newVisits				as metric_newVisits_hourly, 
+			     metric_timeOnSite				as metric_timeOnSite_hourly,
+				 metric_bounces					as metric_bounces_hourly,
+				 metric_entrances				as metric_entrances_hourly,
+				 date('$(startDate)','YYYY-MM-DD') as ForDate,
+				 replace('$(profileChanged)','ga:','') 	  as ga_id
+			FROM [http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=DataFromQueryURI&appID=$(vAppId)&feed=$(urlEncoded1)](qvx);
+			
+			join
+			
+			LOAD
+				 dim_visitorType, 
+			     dim_source, 
+			     dim_keyword, 
+			     //dim_browser, 
+			     dim_isMobile, 
+			     //dim_language, 
+			     dim_medium,
+			     dim_city					as City, 
+			     dim_hour,
+			     metric_visitors				as metric_visitors_medium, 
+			     metric_percentNewVisits		as metric_percentNewVisits_medium, 
+			     metric_visits					as metric_visits_medium, 
+			     metric_organicSearches			as metric_organicSearches_medium, 
+			     metric_pageviewsPerVisit		as metric_pageviewsPerVisit_medium, 
+			     metric_pageviews				as metric_pageviews_medium, 
+			     metric_newVisits				as metric_newVisits_medium, 
+			     metric_timeOnSite				as metric_timeOnSite_medium,
+				 metric_bounces					as metric_bounces_medium,
+				 metric_entrances				as metric_entrances_medium,
+				date('$(startDate)','YYYY-MM-DD') as ForDate,
+				replace('$(profileChanged)','ga:','') 	  as ga_id
+			FROM [http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=DataFromQueryURI&appID=$(vAppId)&feed=$(urlEncoded2)](qvx);
+						
+			let qvdCreateTime = QvdCreateTime('.\Main_$(profile).qvd');
+		
+			if '$(qvdCreateTime)' <> '' then
+				NoConcatenate
+				TempTable:
+				Load
+					*
+				From [.\Main_$(profile).qvd] (qvd)
+				Where 
+						ForDate < '$(startDate)'//num(date(date#(FieldValue('$(startDate)', $(i)),'YYYY-MM-DD'),'YYYY-MM-DD'))
+					and ga_id = $(profile)
+				;
+
+				Concatenate (TempTable)
+				
+				Load * Resident $(tableName);
+				
+//				NoConcatenate		
+//				TempTable1:
+//				Load
+//					*
+//				From [.\Main_$(profile).qvd] (qvd)
+//				Where 
+//						ForDate < '$(startDate)'
+//					and WebProfiles_id <> replace('$(id)','ga:','')
+//				;		
+//				
+//				Concatenate
+//				
+//				Load * Resident TempTable;
+				
+				Store TempTable Into  .\Main_$(profile).qvd;		
+				Drop Table $(tableName);
+				Drop Table TempTable;
+//				Drop Table TempTable1;
+			
+			else
+				Store $(tableName) Into .\Main_$(profile).qvd;
+				Drop Table $(tableName);
+			end if
+			
+			let qvdCreateTime = QvdCreateTime('.\locations.qvd');
+		
+			if '$(qvdCreateTime)' <> '' then	
+			
+				GeoLocations_Temp:
+				LOAD 
+					 Data_dim_continent, 
+				     Data_dim_subContinent, 
+				     Data_dim_country, 
+				     Data_dim_region, 
+				     Data_dim_city, 
+				     Data_dim_latitude, 
+				     Data_dim_longitude, 
+				     Data_metric_visitors
+				FROM [.\locations.qvd] (qvd);
+	
+				Concatenate
+	
+				LOAD
+					dim_continent as Data_dim_continent,
+					dim_subContinent as Data_dim_subContinent,
+					dim_country as Data_dim_country,
+					dim_region as Data_dim_region,
+					dim_city as Data_dim_city,
+					dim_latitude as Data_dim_latitude,
+					dim_longitude as Data_dim_longitude,
+					metric_visitors as Data_metric_visitors
+				FROM [http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=DataFromQueryURI&appID=$(vAppId)&feed=$(locationUrlEncoded)](qvx);
+				
+				NoConcatenate
+				GeoLocations:
+				Load
+					distinct * 
+				Resident GeoLocations_Temp;
+							
+				Store GeoLocations into .\locations.qvd;
+				
+				Drop Table GeoLocations;			
+				Drop Table GeoLocations_Temp;						
+			else
+				GeoLocations:
+				LOAD
+					dim_continent as Data_dim_continent,
+					dim_subContinent as Data_dim_subContinent,
+					dim_country as Data_dim_country,
+					dim_region as Data_dim_region,
+					dim_city as Data_dim_city,
+					dim_latitude as Data_dim_latitude,
+					dim_longitude as Data_dim_longitude,
+					metric_visitors as Data_metric_visitors
+				FROM [http://localhost:5555/QVSource/GoogleAnalyticsConnectorV3/?table=DataFromQueryURI&appID=$(vAppId)&feed=$(locationUrlEncoded)](qvx);		
+				
+				Store GeoLocations into .\locations.qvd;
+				
+				Drop Table GeoLocations;
+			end if
+		
+		next
+	next
+///$tab Load Data
+Data:
+LOAD dim_visitorType, 
+     dim_source, 
+     dim_keyword, 
+     dim_browser, 
+     dim_isMobile, 
+     dim_language, 
+     dim_city					as City, 
+     dim_hour,
+     dim_medium,
+     metric_visitors, 
+     metric_percentNewVisits, 
+     metric_visits, 
+     metric_organicSearches, 
+     metric_pageviewsPerVisit, 
+     metric_pageviews, 
+     metric_newVisits, 
+     metric_timeOnSite,
+	 metric_bounces,
+	 metric_entrances,
+     ForDate, 
+     ga_id,
+	metric_visitors_hourly, 
+	metric_percentNewVisits_hourly, 
+	metric_visits_hourly, 
+	metric_organicSearches_hourly, 
+	metric_pageviewsPerVisit_hourly, 
+	metric_pageviews_hourly, 
+	metric_newVisits_hourly, 
+	metric_timeOnSite_hourly,
+	metric_bounces_hourly,
+	metric_entrances_hourly,
+
+	metric_visitors_medium, 
+	metric_percentNewVisits_medium, 
+	metric_visits_medium, 
+	metric_organicSearches_medium, 
+	metric_pageviewsPerVisit_medium, 
+	metric_pageviews_medium, 
+	metric_newVisits_medium, 
+	metric_timeOnSite_medium,
+	metric_bounces_medium,
+	metric_entrances_medium	     
+FROM [.\Main*.qvd](qvd);
+
+left join 
+
+	IntervalMatch ( metric_timeOnSite ) 
+	Load 
+		VisitDurationStart,
+		VisitDurationEnd
+	Resident VisitDurations;
+	
+join 
+	Load
+		VisitDurationStart, 
+		VisitDurationEnd,
+		VisitDurationDisplay
+	Resident VisitDurations;	
+	
+Drop Table VisitDurations;
+
+Locations:
+LOAD 
+	 Data_dim_continent		as Continent, 
+     Data_dim_subContinent	as SubContinent, 
+     Data_dim_country		as Country, 
+     Data_dim_region		as Region, 
+     Data_dim_city			as City, 
+     Data_dim_latitude		as Latitude, 
+     Data_dim_longitude		as Longitude
+FROM [.\locations.qvd] (qvd);
+
+///$tab Calendar
+CalendarTemp:
+Load
+	Max(ForDate) AS DateMax,
+	Min(ForDate) AS DateMin
+Resident Data;
+
+LET vMaxDate = FieldValue('DateMax', 1);
+LET vMinDate = FieldValue('DateMin', 1) -1;
+
+Drop Table CalendarTemp;
+
+MasterCalendar:
+Load 
+	num(Date(IterNo() + Date($(vMinDate)))) AS ForDate,
+	Date(IterNo() + Date($(vMinDate))) AS Date,	
+	Week(Date(IterNo() + Date($(vMinDate)))) AS Week,
+	Month(Date(IterNo() + Date($(vMinDate)))) AS Month,
+	Year(Date(IterNo() + Date($(vMinDate)))) AS Year
+AutoGenerate 1 
+While Date(IterNo() + Date($(vMinDate))) <= Date($(vMaxDate));
+
+Hours:
+Load * Inline [
+	dim_hour
+	00
+	01
+	02
+	03
+	04
+	05
+	06
+	07
+	08
+	09
+	10
+	11
+	12
+	13
+	14
+	15
+	16
+	17
+	18
+	19
+	20
+	21
+	22
+	23
+];
+///$tab Map
+// Google Maps in QlikView
+// V0.9 - October 1st 2008  © Copyright QlikTech International AB 2008 / AES
+
+// Google Maps Key
+// get a key here http://code.google.com/apis/maps/signup.html
+gmap_key = 'ABQIAAAARgOVld87_PXoirC53dSy9xRGCSZS1JLvVKw5BMSt8jCwD2OEVxQ_WkEmSlE6xNY-g6e5HJDHExdmTQ';
+max_zoom_level = 14; //maximum value 17 
+
+// Variables required for calculating map
+// No need to change these
+var_pi180=		'=pi()/180';
+var_lat_offset=	'0';
+var_mc2=		'=256*pow(2,$(var_zoom))';
+var_mc1=		'=256*pow(2,($(var_zoom)-1))';
+var_mid_lat=	'=min(Latitude)+(1+var_lat_offset)*((max(Latitude)-min(Latitude))/2)';
+var_mid_long=	'=min(Longitude)+(max(Longitude)-min(Longitude))/2';
+var_zoom=		'=max(aggr(if(max( round(256*pow(2,(_zoom_level -1)))+( Longitude  *((256*pow(2,_zoom_level ))/360)) )-min( round(256*pow(2,(_zoom_level -1)))+( Longitude  *((256*pow(2,_zoom_level ))/360)) ) <map_size_x AND max((256*pow(2,(_zoom_level-1)))+((0.5*log((1+(sin((Latitude)*pi()/180)))/(1-(sin((Latitude)*pi()/180)))))*((-256*pow(2,_zoom_level))/(2*pi()))))-min((256*pow(2,(_zoom_level-1)))+((0.5*log((1+(sin((Latitude)*pi()/180)))/(1-(sin((Latitude)*pi()/180)))))*((-256*pow(2,_zoom_level))/(2*pi()))))<map_size_y,_zoom_level,1),_zoom_level))';
+var_maptype=	'=if(isnull(only(maptype)),fieldvalue( '&chr(39)&'maptype'&chr(39)&', 1 ),maptype)';
+map_size_x=	    '400';
+map_size_y=     '400';
+
+SET HidePrefix='_' ;
+// Field required for calcualting best zoom level
+_zoom_level:
+Load RecNo( ) as _zoom_level autogenerate(max_zoom_level);
+
+maptype:
+LOAD * INLINE [
+    maptype
+    roadmap
+	mobile
+	satellite
+	terrain
+	hybrid 
+];

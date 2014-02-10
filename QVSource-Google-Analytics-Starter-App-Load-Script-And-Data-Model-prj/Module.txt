@@ -1,0 +1,33 @@
+﻿Function URLEncode(ByVal str)
+ Dim strTemp, strChar
+ Dim intPos, intASCII
+ strTemp = ""
+ strChar = ""
+ For intPos = 1 To Len(str)
+  intASCII = Asc(Mid(str, intPos, 1))
+  If intASCII = 32 Then
+   strTemp = strTemp & "+"
+  ElseIf ((intASCII < 123) And (intASCII > 96)) Then
+   strTemp = strTemp & Chr(intASCII)
+  ElseIf ((intASCII < 91) And (intASCII > 64)) Then
+   strTemp = strTemp & Chr(intASCII)
+  ElseIf ((intASCII < 58) And (intASCII > 47)) Then
+   strTemp = strTemp & Chr(intASCII)
+  Else
+   strChar = Trim(Hex(intASCII))
+   If intASCII < 16 Then
+    strTemp = strTemp & "%0" & strChar
+   Else
+    strTemp = strTemp & "%" & strChar
+   End If
+  End If
+ Next
+ URLEncode = strTemp
+End Function
+
+
+sub UpdateSelectedProfiles
+	txt = ActiveDocument.GetSheetObject("TX_PROFILES").GetText
+	ActiveDocument.Variables("vProfiles").SetContent txt, true
+
+end sub
