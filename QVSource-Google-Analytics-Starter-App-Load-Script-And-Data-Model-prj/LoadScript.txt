@@ -2,6 +2,11 @@
 /*
 Change Log
 ----------
+1.0.0.6 - 10/02/14
+------------------
+* Moved badge.
+* Recreated repository.
+
 1.0.0.5 - 04/12/13
 ------------------
 * Added badge.
