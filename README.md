@@ -1,7 +1,7 @@
 ## QVSource Google Analytics Starter App For QlikView
 A template application showing how to get started using the [QVSource Google Analytics Connector](http://wiki.qvsource.com/Google-Analytics-Connector-For-QlikView-(v3).ashx) for QlikView. 
 
-*Please Note:* We are working on a [replacement to this application here](https://github.com/QVSource/QVSource-Google-Analytics-Starter-App-For-QlikView-V2) with a simplified load script and data model.
+**Please Note:** We are working on a [replacement to this application here](https://github.com/QVSource/QVSource-Google-Analytics-Starter-App-For-QlikView-V2) with a simplified load script and data model.
 
 If you are a QlikView + QVSource user you can simply click the ["Download ZIP"] (https://github.com/QVSource/QVSource-Google-Analytics-Starter-App-For-QlikView/archive/master.zip) button on GitHub to grab this application.
 
