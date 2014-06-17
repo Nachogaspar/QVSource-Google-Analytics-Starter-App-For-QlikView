@@ -8,6 +8,10 @@ If you are a QlikView + QVSource user you can simply click the ["Download ZIP"] 
 The content below is copied from the change log in the first tab of the load script.
 
 ### Change Log
+#### 1.0.0.7 - 17/06/14
+* Fixed map by changing transparency to 0%.
+* Changed 'defaultPage as WebProfiles_defaultPage ' on GoogleAnalyticsConnectorV3_WebProfiles table to 'null() as WebProfiles_defaultPage'. Seems this was failing for some users.    
+
 #### 1.0.0.6 - 10/02/14
 * Moved badge.
 * Recreated repository.

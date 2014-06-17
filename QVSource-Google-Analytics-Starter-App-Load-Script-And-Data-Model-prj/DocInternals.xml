@@ -542,7 +542,6 @@
           <String>WebProperties_updated</String>
           <String>dim_visitorType</String>
           <String>dim_source</String>
-          <String>dim_keyword</String>
           <String>dim_browser</String>
           <String>dim_isMobile</String>
           <String>dim_language</String>
@@ -550,7 +549,6 @@
           <String>dim_medium</String>
           <String>Continent</String>
           <String>SubContinent</String>
-          <String>Country</String>
           <String>Region</String>
           <String>maptype</String>
         </FieldNames>
@@ -699,7 +697,6 @@
           <String>metric_percentNewVisits_medium</String>
           <String>metric_visits_medium</String>
           <String>metric_organicSearches_medium</String>
-          <String>metric_pageviewsPerVisit_medium</String>
           <String>metric_pageviews_medium</String>
           <String>metric_newVisits_medium</String>
           <String>metric_timeOnSite_medium</String>

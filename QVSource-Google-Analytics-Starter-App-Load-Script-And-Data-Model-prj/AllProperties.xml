@@ -3766,12 +3766,12 @@
         <Thou></Thou>
       </NumberPresentation>
       <DefaultNumberPresentation>
-        <Type>UNKNOWN</Type>
+        <Type>REAL</Type>
         <nDec>0</nDec>
         <UseThou>0</UseThou>
-        <Fmt></Fmt>
-        <Dec></Dec>
-        <Thou></Thou>
+        <Fmt>##############</Fmt>
+        <Dec>.</Dec>
+        <Thou>,</Thou>
       </DefaultNumberPresentation>
       <NumberPresentationSurvive>true</NumberPresentationSurvive>
       <ShowAlternatives>false</ShowAlternatives>

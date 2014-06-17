@@ -2404,8 +2404,12 @@
       <Comment></Comment>
       <OtherTotalSpec>
         <OtherMode>OTHER_OFF</OtherMode>
-        <OtherCounted></OtherCounted>
-        <OtherLimit></OtherLimit>
+        <OtherCounted>
+          <v>10</v>
+        </OtherCounted>
+        <OtherLimit>
+          <v>0.05</v>
+        </OtherLimit>
         <OtherLimitMode>OTHER_GT_LIMIT</OtherLimitMode>
         <SuppressOther>true</SuppressOther>
         <ForceBadValueKeeping>true</ForceBadValueKeeping>
@@ -3395,7 +3399,7 @@
     </PlotAreaColor>
     <Bmp enctype="base64"></Bmp>
     <BkgMode>BKG_DYNAMIC_IMAGE</BkgMode>
-    <BkgAlpha>0</BkgAlpha>
+    <BkgAlpha>255</BkgAlpha>
     <FullBkgBmp>false</FullBkgBmp>
     <BkgImageSettings_NOT_IMPLEMENTED></BkgImageSettings_NOT_IMPLEMENTED>
     <InChart>false</InChart>
